@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
-import {getPosts} from "../../services";
-import type {Post} from "../../types/Post.ts";
+import {getProducts} from "../../services";
+import type {Product} from "../../types/Product.ts";
 import {Link} from "react-router";
 import {Loader} from "../../components/loader/Loader.tsx";
 import {userUser} from "../../contexts/UserContext.tsx";
@@ -13,21 +13,21 @@ const PagePosts = () => {
     const {logout, login, user} = userUser();
 
     const filteredPosts = useMemo(() => {
-        return posts.filter((post) => {
+        return posts.filter((post: Product) => {
             const value = search.toLowerCase();
             return (
-                post.title.toLowerCase().includes(value)
+                post.name.toLowerCase().includes(value)
             )
         })
     },[posts,search])
 
     useEffect(() => {
         setIsLoading(true);
-        getPosts(page,10).then((res) => {
+        getProducts().then((res) => {
             setPosts(res);
-            setIsLoading(false);
+            setIsLoading(false)
         });
-    },[page]);
+    },[]);
 
     const handleLogin = () => {
         login({
@@ -42,14 +42,14 @@ const PagePosts = () => {
     }, []);
 
     return (
-        <div className={"min-h-screen bg-slate-950 w-full py-8"}>
-            <div className={"w-full max-w-7xl mx-auto flex justify-between items-center"}>
+        <>
+            <div className={"flex justify-between items-center"}>
                 {
                     (user) &&
-                        <div className={"text-slate-300 flex flex-col py-2 px-4 bg-slate-800 rounded-2xl w-max mb-3"}>
+                        (<div className={"text-slate-300 flex flex-col py-2 px-4 bg-slate-800 rounded-2xl w-max mb-3"}>
                             <p className={"font-bold"}>{user.name}</p>
                             <small>{user.email}</small>
-                        </div>
+                        </div>)
                 }
                 <button
                     onClick={() => logout()}
@@ -73,6 +73,9 @@ const PagePosts = () => {
                     />
                 </div>
             </div>
+            <div className={"w-full max-w-7xl mx-auto flex justify-end mb-3"}>
+                <Link to={"/products/nuevo-producto"} className={"bg-orange-500 p-4 rounded-2xl text-white hover:bg-orange-600 transition cursor-pointer"}>Agregar producto</Link>
+            </div>
             {(isLoading) ?
                 <>
                     <Loader message={"Posts"} />
@@ -81,26 +84,26 @@ const PagePosts = () => {
                 <>
                     {filteredPosts.length > 0 ?
                         <div className={"w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-8"}>
-                            {filteredPosts.map((post: Post) => {
+                            {filteredPosts.map((post: Product) => {
                                 return (
                                     <div className={"bg-slate-700 p-4 rounded-2xl"} key={post.id}>
-                                        <img src={post.thumbnail} alt={post.title} className={"rounded-2xl mb-3"} />
+                                        <img src={post.thumbnail} alt={post.name} className={"rounded-2xl mb-3"} />
                                         <h3 className={"text-orange-500 text-2xl uppercase font-bold h-[100px]"}>
-                                            {post.title.slice(0,50)}
-                                            {(post.title.length <= 50) ? "" : "..."}
+                                            {post.name.slice(0,50)}
+                                            {(post.name.length <= 50) ? "" : "..."}
                                         </h3>
                                         <p className={"text-slate-400 py-3"}>
-                                            {post.body.slice(0,120)}
-                                            {(post.body.length <= 120) ? "" : "..."}
+                                            {post.description.slice(0,120)}
+                                            {(post.description.length <= 120) ? "" : "..."}
                                         </p>
-                                        <Link to={`/posts/${post.id}`} className={"block p-4 bg-orange-500 text-white text-center rounded-2xl mt-3"}>Ver detalle</Link>
+                                        <Link to={`/products/${post.id}`} className={"block p-4 bg-orange-500 text-white text-center rounded-2xl mt-3"}>Ver detalle</Link>
                                     </div>
                                 )
                             })}
                         </div>
                         :
-                        <div className={"bg-slate-500"}>
-                            <h3>No hay publicaciones por mostrar</h3>
+                        <div className={"bg-slate-500 flex flex-col justify-center items-center p-4 rounded-2xl w-max mx-auto text-slate-300 my-8"}>
+                            <h3 className={"font-bold"}>No hay publicaciones por mostrar</h3>
                             <p>Intenta más tarde</p>
                         </div>
                     }
@@ -128,7 +131,7 @@ const PagePosts = () => {
                     }
                 </>
             }
-        </div>
+        </>
     )
 }
 

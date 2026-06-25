@@ -2,10 +2,10 @@ export const routes = {
     home: {
         path: "/",
     },
-    posts: {
-        path: "/posts",
+    products: {
+        path: "/products",
+        create: {
+            path: "/products/nuevo-producto",
+        },
     },
-    users: {
-        path: "/users",
-    }
 } as const;
